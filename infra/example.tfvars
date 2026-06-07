@@ -1,0 +1,5 @@
+aws_region  = "us-east-1"
+ios_url     = "https://apps.apple.com/app/idYOUR_APP_ID"
+android_url = "https://play.google.com/store/apps/details?id=com.yourcompany.yourapp"
+default_url = "https://your-landing-page.example.com"
+stats_token = "change-me-to-a-long-random-string"

@@ -1,0 +1,16 @@
+{
+  "name": "mobile-gateway",
+  "version": "1.0.0",
+  "description": "Self-hosted Dub-style redirect link: device-aware App Store / Play Store redirect with click tracking on AWS Lambda + DynamoDB.",
+  "type": "commonjs",
+  "main": "src/handler.js",
+  "scripts": {
+    "test": "node --test"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.658.0",
+    "@aws-sdk/lib-dynamodb": "^3.658.0",
+    "uuid": "^11.1.1"
+  }
+}

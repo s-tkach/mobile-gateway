@@ -1,0 +1,12 @@
+node_modules/
+infra/build/
+infra/.terraform/
+infra/.terraform.lock.hcl
+*.tfstate
+*.tfstate.*
+*.tfvars
+!example.tfvars
+.DS_Store
+
+# Local Claude Code config (machine-specific)
+.claude/
