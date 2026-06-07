@@ -55,11 +55,14 @@ async function handler(event, deps = {}) {
     ? headers["x-forwarded-for"].split(",")[0].trim()
     : null;
 
-  // Logging must never block the redirect.
-  try {
-    await recordClick({ device, ua, country, ip });
-  } catch (err) {
-    console.error("recordClick failed:", err);
+  // Only record clicks on the root path to avoid counting browser noise
+  // (favicon, prefetch, etc.) triggered by viewing /stats.
+  if (path === "/" || path === "") {
+    try {
+      await recordClick({ device, ua, country, ip });
+    } catch (err) {
+      console.error("recordClick failed:", err);
+    }
   }
 
   const target = TARGETS[device]();

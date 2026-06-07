@@ -114,3 +114,10 @@ test("/stats does not record a click", async () => {
   await handler(event({ path: "/stats", query: { token: ENV.STATS_TOKEN } }), deps);
   assert.equal(recorded.length, 0);
 });
+
+test("/favicon.ico does not record a click", async () => {
+  const { deps, recorded } = makeDeps();
+  const res = await handler(event({ path: "/favicon.ico", ua: "Chrome" }), deps);
+  assert.equal(res.statusCode, 302);
+  assert.equal(recorded.length, 0);
+});
