@@ -30,3 +30,9 @@ variable "stats_token" {
   type        = string
   sensitive   = true
 }
+
+variable "prod_version" {
+  description = "Published Lambda version number to serve on the prod alias."
+  type        = string
+  default     = "1"
+}

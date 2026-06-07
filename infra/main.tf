@@ -95,6 +95,7 @@ resource "aws_lambda_function" "redirect" {
   source_code_hash = data.archive_file.lambda_zip.output_base64sha256
   timeout          = 5
   memory_size      = 128
+  publish          = true
 
   environment {
     variables = {
@@ -127,3 +128,49 @@ resource "aws_lambda_permission" "allow_public_invoke" {
   function_name = aws_lambda_function.redirect.function_name
   principal     = "*"
 }
+
+# --- Lambda aliases -----------------------------------------------------------
+resource "aws_lambda_alias" "stage" {
+  name             = "stage"
+  function_name    = aws_lambda_function.redirect.function_name
+  function_version = aws_lambda_function.redirect.version
+}
+
+resource "aws_lambda_alias" "prod" {
+  name             = "prod"
+  function_name    = aws_lambda_function.redirect.function_name
+  function_version = var.prod_version
+}
+
+# --- Stage Function URL -------------------------------------------------------
+resource "aws_lambda_function_url" "stage" {
+  function_name      = aws_lambda_function.redirect.function_name
+  qualifier          = aws_lambda_alias.stage.name
+  authorization_type = "NONE"
+}
+
+resource "aws_lambda_permission" "stage_url" {
+  statement_id           = "FunctionURLAllowPublicAccess-stage"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.redirect.function_name
+  qualifier              = aws_lambda_alias.stage.name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
+# --- Prod Function URL --------------------------------------------------------
+resource "aws_lambda_function_url" "prod" {
+  function_name      = aws_lambda_function.redirect.function_name
+  qualifier          = aws_lambda_alias.prod.name
+  authorization_type = "NONE"
+}
+
+resource "aws_lambda_permission" "prod_url" {
+  statement_id           = "FunctionURLAllowPublicAccess-prod"
+  action                 = "lambda:InvokeFunctionUrl"
+  function_name          = aws_lambda_function.redirect.function_name
+  qualifier              = aws_lambda_alias.prod.name
+  principal              = "*"
+  function_url_auth_type = "NONE"
+}
+
