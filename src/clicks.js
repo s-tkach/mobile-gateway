@@ -51,23 +51,21 @@ async function recordClick(click, deps = {}) {
 }
 
 /**
- * Aggregate click counts and return the most recent items.
+ * Aggregate click counts by device type.
  *
- * @param {{limit?:number}} [opts]
  * @param {{client?:object, tableName?:string}} [deps]
- * @returns {Promise<{total:number, ios:number, android:number, other:number, recent:object[]}>}
+ * @returns {Promise<{total:number, ios:number, android:number, other:number}>}
  */
-async function getStats(opts = {}, deps = {}) {
+async function getStats(deps = {}) {
   const client = deps.client || getDefaultClient();
   const tableName = deps.tableName || process.env.TABLE_NAME;
-  const limit = opts.limit ?? 20;
 
   const res = await client.send(
     new QueryCommand({
       TableName: tableName,
       KeyConditionExpression: "pk = :pk",
       ExpressionAttributeValues: { ":pk": PARTITION },
-      ScanIndexForward: false, // newest first
+      ScanIndexForward: false,
     })
   );
 
@@ -78,7 +76,6 @@ async function getStats(opts = {}, deps = {}) {
     else if (it.device === "android") stats.android += 1;
     else stats.other += 1;
   }
-  stats.recent = items.slice(0, limit);
   return stats;
 }
 

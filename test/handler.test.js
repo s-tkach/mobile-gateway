@@ -97,7 +97,7 @@ test("/stats with wrong token returns 401", async () => {
 });
 
 test("/stats with correct token returns 200 JSON stats", async () => {
-  const { deps } = makeDeps({ total: 7, ios: 4, android: 3, other: 0, recent: [] });
+  const { deps } = makeDeps({ total: 7, ios: 4, android: 3, other: 0 });
   const res = await handler(
     event({ path: "/stats", query: { token: ENV.STATS_TOKEN } }),
     deps

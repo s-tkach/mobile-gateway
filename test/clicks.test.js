@@ -57,7 +57,7 @@ test("recordClick handles missing country/ip gracefully", async () => {
   assert.equal(item.ipHash, null);
 });
 
-test("getStats aggregates counts by device and returns recent items", async () => {
+test("getStats aggregates counts by device", async () => {
   const items = [
     { device: "ios", ts: "2026-06-07T10:00:00Z" },
     { device: "ios", ts: "2026-06-07T09:00:00Z" },
@@ -65,30 +65,29 @@ test("getStats aggregates counts by device and returns recent items", async () =
     { device: "other", ts: "2026-06-07T07:00:00Z" },
   ];
   const client = makeFakeClient(items);
-  const stats = await getStats({ limit: 2 }, { client, tableName: "T" });
+  const stats = await getStats({ client, tableName: "T" });
 
   assert.equal(stats.total, 4);
   assert.equal(stats.ios, 2);
   assert.equal(stats.android, 1);
   assert.equal(stats.other, 1);
-  assert.equal(stats.recent.length, 2);
+  assert.equal(stats.recent, undefined);
 });
 
 test("getStats queries pk=CLICK descending without a row Limit (counts need all rows)", async () => {
   const client = makeFakeClient([]);
-  await getStats({ limit: 5 }, { client, tableName: "T" });
+  await getStats({ client, tableName: "T" });
   const input = client.sent[0].input;
   assert.equal(input.TableName, "T");
   assert.equal(input.ScanIndexForward, false);
-  // No DynamoDB Limit: totals must count every row; "recent" is sliced in code.
   assert.equal(input.Limit, undefined);
   assert.equal(input.ExpressionAttributeValues[":pk"], "CLICK");
 });
 
 test("getStats handles empty table", async () => {
   const client = makeFakeClient([]);
-  const stats = await getStats({}, { client, tableName: "T" });
+  const stats = await getStats({ client, tableName: "T" });
   assert.equal(stats.total, 0);
   assert.equal(stats.ios, 0);
-  assert.deepEqual(stats.recent, []);
+  assert.equal(stats.recent, undefined);
 });
